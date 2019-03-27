@@ -3,6 +3,14 @@ const router = express.Router();
 const bcrypt = require("bcryptjs");
 const Users = require("../data/helpers/usersHelpers"); //connection
 
+router.get("/users", (req, res) => {
+  Users.getAllUsers()
+    .then(users => {
+      res.status(200).json(users);
+    })
+    .catch(error => res.status(500).json({ error: error }));
+});
+
 router.post("/register", (req, res) => {
   let user = req.body;
   //  hash the password
