@@ -17,8 +17,5 @@ function getAllUsers() {
 }
 
 function addUser(user) {
-  return db
-    .insert(user)
-    .into("users")
-    .first();
+  return db.insert(user).into("users");
 }

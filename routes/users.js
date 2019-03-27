@@ -16,11 +16,12 @@ router.post("/register", (req, res) => {
   //  hash the password
   const salt = 10;
   const hash = bcrypt.hashSync(user.password, salt);
+  //replace password with hash
   user.password = hash;
 
   Users.addUser(user)
-    .then(saved => {
-      res.status(201).json(saved);
+    .then(([count]) => {
+      res.status(201).json(count);
     })
     .catch(error => res.status(500).json({ error: error }));
 });
