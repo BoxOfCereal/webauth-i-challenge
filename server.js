@@ -13,4 +13,6 @@ server.get("/", (req, res) => {
   res.send(`please use the API routes '/api/endpoint' `);
 });
 
+server.use("/api", require("./routes/users"));
+
 module.exports = server;
