@@ -23,6 +23,10 @@ server.use(helmet());
 server.use(express.json());
 server.use(cors());
 
+//global middleware
+const { protected } = require("./middleware/auth");
+server.use("/api/restricted", protected);
+
 server.get("/", (req, res) => {
   res.send(`please use the API routes '/api/endpoint' `);
 });
