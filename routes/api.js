@@ -2,8 +2,9 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const Users = require("../data/helpers/usersHelpers"); //connection
+const { protected } = require("../middleware/auth");
 
-router.get("/users", (req, res) => {
+router.get("/users", protected, (req, res) => {
   Users.getAllUsers()
     .then(users => {
       res.status(200).json(users);
@@ -32,13 +33,30 @@ router.post("/login", (req, res) => {
   Users.getUserByName({ username })
     .then(user => {
       //check if password matches hash
-      user && bcrypt.compareSync(password, user.password)
-        ? res.status(200).json({ message: `Welcome ${user.username}!` })
-        : res.status(401).json({ message: "Invalid Credentials" });
+      if (user && bcrypt.compareSync(password, user.password)) {
+        req.session.username = username;
+        req.session.userId = user.id;
+        res.status(200).json({ message: `Welcome ${user.username}!` });
+      } else {
+        res.status(401).json({ message: "Invalid Credentials" });
+      }
     })
     .catch(error => {
       res.status(500).json(error);
     });
+});
+
+//destroy sessions
+router.get("/logout", (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.send("error logging out");
+      } else {
+        res.send("good bye");
+      }
+    });
+  }
 });
 
 module.exports = router;
