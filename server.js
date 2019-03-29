@@ -2,6 +2,7 @@ const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
 const session = require("express-session");
+const KnexSessionStore = require("connect-session-knex");
 
 const server = express();
 
@@ -16,7 +17,15 @@ server.use(
     }, // 1 day in milliseconds
     httpOnly: true, // don't let JS code access cookies. Browser extensions run JS code on your browser!
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+
+    store: new KnexSessionStore({
+      knex: require("./data/dbconfig"),
+      tablename: "sessions",
+      sidfieldname: "sid",
+      createtable: true,
+      clearInterval: 1000 * 60 * 60
+    })
   })
 );
 server.use(helmet());
